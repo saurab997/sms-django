@@ -11,10 +11,13 @@ def index(request):
     
 def delete(request, id):
     student = Student.objects.get(id = id)
-    student.delete()
-    return redirect('/')
+    if request.method == "POST": #if request is post then only perform the delete operation 
+        student.delete()
+    return redirect('home')
 
 def create(request):
+    if request.method == "GET":
+        return render(request, "create.html")
     name = request.POST.get('name')
     roll = request.POST.get('roll')
     age = request.POST.get('age')
@@ -27,9 +30,15 @@ def create(request):
         Class = Class
     )
 
-    return redirect('/')
+    return redirect('home') #if this is not done and again render then it goes to loop type, security threat
 
 def update(request, id):
+    if request.method == "GET":
+        student = Student.objects.get(id = id)
+        context={
+            'student' : student
+        }
+        return render(request, "update.html", context)
     student = Student.objects.get(id = id)
     student.name = request.POST.get('name')
     student.roll = request.POST.get('roll')
@@ -37,4 +46,4 @@ def update(request, id):
     student.Class = request.POST.get('Class')
     student.save()
     
-    return redirect('/')
+    return redirect('home')
